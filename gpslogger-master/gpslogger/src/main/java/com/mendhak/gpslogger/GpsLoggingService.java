@@ -33,10 +33,12 @@ import android.support.v4.app.TaskStackBuilder;
 import android.text.Html;
 import android.util.Log;
 
+import com.google.android.gms.dynamic.ObjectWrapper;
 import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
+import com.google.gson.Gson;
 import com.mendhak.gpslogger.common.*;
 import com.mendhak.gpslogger.common.events.CommandEvents;
 import com.mendhak.gpslogger.common.events.ProfileEvents;
@@ -46,6 +48,9 @@ import com.mendhak.gpslogger.common.slf4j.SessionLogcatAppender;
 import com.mendhak.gpslogger.loggers.FileLoggerFactory;
 import com.mendhak.gpslogger.loggers.Files;
 import com.mendhak.gpslogger.loggers.nmea.NmeaFileLogger;
+import com.mendhak.gpslogger.model.RequestToSNOW;
+import com.mendhak.gpslogger.model.u_request;
+import com.mendhak.gpslogger.model.u_response;
 import com.mendhak.gpslogger.senders.AlarmReceiver;
 import com.mendhak.gpslogger.senders.FileSenderFactory;
 import de.greenrobot.event.EventBus;
@@ -58,7 +63,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -1165,44 +1172,55 @@ public class GpsLoggingService extends Service  {
             @Override
             public void run() {
                 try {
-                    //URL url = new URL("https://reqres.in/api/users");//URLAddress
-                    URL url = new URL("https://192.168.192.97:8443/location/data");//URLAddress
+
+                    URL url = new URL("https://tataindev.service-now.com/api/now/table/u_location_tracker_log");//URLAddress
                     HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-                    HttpsTrustManager.allowAllSSL();
-                    //SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-                    //((HttpsURLConnection) conn).setSSLSocketFactory(socketFactory);
+                    //HttpsTrustManager.allowAllSSL();
                     conn.setRequestMethod("POST");
-                    conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-                    conn.setRequestProperty("Accept","application/json");
-                    //conn.setDoOutput(true);
+                    conn.setRequestProperty("Content-Type", "application/json");
+                    conn.setRequestProperty ("Authorization", "Basic bG9jYXRpb24udHJhY2tlcjE6bG9jYXRpb24udHJhY2tlcjE=");
+                    conn.setDoOutput(true);
                     conn.setDoInput(true);
 
-                    JSONObject jsonParam = new JSONObject();
-                    /*jsonParam.put("name", "morpheus");
-                    jsonParam.put("job", "leader");*/
-                    jsonParam.put("status", "In-Route");
-                    jsonParam.put("time_saved", "2019-12-10T05:06:14.994+05:30");
-                    jsonParam.put("user_id", "2a5807a4db8313c05f1af90f689619f7");
-                    jsonParam.put("latitude", latitude);
-                    jsonParam.put("longitude", longitude);
-                    jsonParam.put("route_id", "1575916203203-bbd18652-7858-425c-a4bd-1e75d6134c7c");
-                    jsonParam.put("time", "10:44:29.578");
-                    jsonParam.put("date", "2019-12-10");
-                    jsonParam.put("google_point", "0");
-                    jsonParam.put("accuracy", "2.13");
+                    u_request u_request = new u_request();
+                    u_request.setFrom_time( getDateTime("hh:mm:ss"));
+                    u_request.setTo_time(new SimpleDateFormat("hh:mm:ss", Locale.getDefault()).format(new Date()));
+                    u_request.setVisit_Date(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date()));
+
+                    u_response u_response = new u_response();
+                    u_response.setDate(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date()));
+                    u_response.setGoogle_point("0");
+                    u_response.setLatitude(latitude);
+                    u_response.setLongitude(longitude);
+                    u_response.setRoute_id("1575916203203-bbd18652-7858-425c-a4bd-1e75d6134c0");
+                    u_response.setStatus("In-Route");
+                    u_response.setTime(new SimpleDateFormat("HH:mm:ss.SS", Locale.getDefault()).format(new Date()));
+                    u_response.setTime_saved(new SimpleDateFormat("YYYY-mm-dd'T'hh:MM:ssZ", Locale.getDefault()).format(new Date()));
+                    u_response.setUser_id("1234");
+                    u_response.setAccuracy("2.316");
+
+                    RequestToSNOW requestToSNOW = new RequestToSNOW();
+                    requestToSNOW.setU_request(u_request);
+                    requestToSNOW.setU_response(u_response);
+                    requestToSNOW.setU_status("200");
+                    requestToSNOW.setU_tracking_type("Geolocation");
+
+                    Gson gson = new Gson();
+                    String json = gson.toJson(requestToSNOW);
 
 
-                    Log.i("JSON", jsonParam.toString());
+                    Log.i("JSON",json.toString());
                     DataOutputStream os = new DataOutputStream(conn.getOutputStream());
-                    os.writeBytes(jsonParam.toString());
+                    os.writeBytes(json.toString());
 
                     os.flush();
                     os.close();
 
-                    Log.i("STATUS", String.valueOf(conn.getResponseCode()));
-                    Log.i("MSG" , conn.getResponseMessage());
+                    System.out.println("STATUS"+ String.valueOf(conn.getResponseCode()));
+                    System.out.println("MSG" +conn.getResponseMessage());
 
                     conn.disconnect();
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1210,5 +1228,11 @@ public class GpsLoggingService extends Service  {
         });
 
         thread.start();
+    }
+
+    public String getDateTime(String str){
+        String result = new SimpleDateFormat(str, Locale.getDefault()).format(new Date());
+        return result;
+
     }
 }
