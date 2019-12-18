@@ -63,6 +63,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Locale;
@@ -1182,26 +1183,30 @@ public class GpsLoggingService extends Service  {
                     conn.setDoOutput(true);
                     conn.setDoInput(true);
 
-                    u_request u_request = new u_request();
-                    u_request.setFrom_time( getDateTime("hh:mm:ss"));
-                    u_request.setTo_time(new SimpleDateFormat("hh:mm:ss", Locale.getDefault()).format(new Date()));
-                    u_request.setVisit_Date(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date()));
+                    JSONObject jsonParamReq = new JSONObject();
+                    jsonParamReq.put("Visit_Date",new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date()))
+                            .put("from_time", getDateTime("hh:mm:ss"))
+                            .put("to_time",new SimpleDateFormat("hh:mm:ss", Locale.getDefault()).format(new Date()));
 
-                    u_response u_response = new u_response();
-                    u_response.setDate(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date()));
-                    u_response.setGoogle_point("0");
-                    u_response.setLatitude(latitude);
-                    u_response.setLongitude(longitude);
-                    u_response.setRoute_id("1575916203203-bbd18652-7858-425c-a4bd-1e75d6134c0");
-                    u_response.setStatus("In-Route");
-                    u_response.setTime(new SimpleDateFormat("HH:mm:ss.SS", Locale.getDefault()).format(new Date()));
-                    u_response.setTime_saved(new SimpleDateFormat("YYYY-mm-dd'T'hh:MM:ssZ", Locale.getDefault()).format(new Date()));
-                    u_response.setUser_id("1234");
-                    u_response.setAccuracy("2.316");
+
+                    JSONObject jsonParamRes = new JSONObject();
+                    jsonParamRes.put("status","In-Route")
+                            .put("accuracy","2.316")
+                            .put("time_saved",new SimpleDateFormat("YYYY-mm-dd'T'hh:MM:ssZ", Locale.getDefault()).format(new Date()))
+                            .put("user_id","1234")
+                            .put("latitude",latitude)
+                            .put("longitude",longitude)
+                            .put("route_id","1575916203203-bbd18652-7858-425c-a4bd-1e75d6134c0")
+                            .put("time",new SimpleDateFormat("HH:mm:ss.SS", Locale.getDefault()).format(new Date()))
+                            .put("date",new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date()))
+                            .put("google_point","0");
+
+                    ArrayList arrayList = new ArrayList();
+                    arrayList.add(jsonParamRes.toString());
 
                     RequestToSNOW requestToSNOW = new RequestToSNOW();
-                    requestToSNOW.setU_request(u_request);
-                    requestToSNOW.setU_response(u_response);
+                    requestToSNOW.setU_request(jsonParamReq.toString());
+                    requestToSNOW.setU_response(arrayList.toString());
                     requestToSNOW.setU_status("200");
                     requestToSNOW.setU_tracking_type("Geolocation");
 
