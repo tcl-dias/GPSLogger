@@ -221,7 +221,8 @@ public class Files {
         {
             return "";
         }
-
+/*
+//Get the default profile
         String baseFileName = data.getLastPathSegment();
         int pos = baseFileName.lastIndexOf(".");
         if (pos > 0 && pos < (baseFileName.length() - 1)) {
@@ -231,7 +232,8 @@ public class Files {
 
 
         return baseFileName;
-
+*/
+        return "";
     }
 
     public static void saveListToCacheFile(List<String> items, String cacheKey, Context ctx){
