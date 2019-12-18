@@ -444,7 +444,7 @@ public class PreferenceHelper {
      */
     @ProfilePreference(name= PreferenceNames.START_LOGGING_ON_APP_LAUNCH)
     public boolean shouldStartLoggingOnAppLaunch() {
-        return prefs.getBoolean(PreferenceNames.START_LOGGING_ON_APP_LAUNCH, false);
+        return prefs.getBoolean(PreferenceNames.START_LOGGING_ON_APP_LAUNCH, true);
     }
 
     /**
