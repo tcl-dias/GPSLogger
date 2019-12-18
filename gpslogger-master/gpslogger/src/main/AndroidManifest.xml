@@ -213,7 +213,13 @@
                 <!-- Handle hyperlinks to gpslogger://properties/http://example.com/your.file -->
                 <data android:scheme="gpslogger" android:host="properties" />
             </intent-filter>
-                  
+                   <!--Cross Launch from service now using the below intent filter -->
+                   <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="www.snow123.com" />
+            </intent-filter>
         </activity>
 
     </application>
