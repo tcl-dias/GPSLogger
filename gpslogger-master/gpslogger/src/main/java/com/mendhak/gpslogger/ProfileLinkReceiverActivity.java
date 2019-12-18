@@ -57,7 +57,7 @@ public class ProfileLinkReceiverActivity extends AppCompatActivity {
                         Dialogs.hideProgress();
 
                         Intent serviceIntent = new Intent(getApplicationContext(), GpsLoggingService.class);
-                        serviceIntent.putExtra(IntentConstants.SWITCH_PROFILE, profileName);
+                       // serviceIntent.putExtra(IntentConstants.SWITCH_PROFILE, profileName);
                         ContextCompat.startForegroundService(getApplicationContext(),  serviceIntent);
 
                         Intent intent = new Intent(getApplicationContext(), GpsMainActivity.class);
