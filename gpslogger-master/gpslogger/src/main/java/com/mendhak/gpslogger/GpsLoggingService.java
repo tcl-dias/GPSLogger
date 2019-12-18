@@ -1221,8 +1221,8 @@ public class GpsLoggingService extends Service  {
                     os.flush();
                     os.close();
 
-                    System.out.println("STATUS"+ String.valueOf(conn.getResponseCode()));
-                    System.out.println("MSG" +conn.getResponseMessage());
+                    System.out.println("STATUS :"+ String.valueOf(conn.getResponseCode()));
+                    System.out.println("MSG :" +conn.getResponseMessage());
 
                     conn.disconnect();
 
